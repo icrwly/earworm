@@ -1,13 +1,18 @@
 import tweepy
 import pymongo
 import random
+import os
+from dotenv import load_dotenv
 import time
 
+# Load environment variables from .env file
+load_dotenv()
+
 # Twitter API credentials
-consumer_key = "YOUR_CONSUMER_KEY"
-consumer_secret = "YOUR_CONSUMER_SECRET"
-access_token = "YOUR_ACCESS_TOKEN"
-access_token_secret = "YOUR_ACCESS_TOKEN_SECRET"
+consumer_key = os.environ.get("TWITTER_CONSUMER_KEY")
+consumer_secret = os.environ.get("TWITTER_CONSUMER_SECRET")
+access_token = os.environ.get("TWITTER_ACCESS_TOKEN")
+access_token_secret = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
 
 # Authenticate with Twitter API
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -17,16 +22,13 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 # MongoDB credentials
-mongo_username = "YOUR_MONGO_USERNAME"
-mongo_password = "YOUR_MONGO_PASSWORD"
-mongo_dbname = "YOUR_MONGO_DBNAME"
+mongo_uri = os.environ.get("MONGODB_URI")
 
 # Connect to MongoDB
-client = pymongo.MongoClient("mongodb+srv://" + mongo_username + ":" + mongo_password + 
-                             "@cluster0.mongodb.net/" + mongo_dbname + "?retryWrites=true&w=majority")
+client = pymongo.MongoClient(mongo_uri)
 
 # Retrieve a random song lyric from MongoDB
-db = client.lyrics_db
+db = client.get_default_database()
 lyrics_collection = db.lyrics_collection
 num_lyrics = lyrics_collection.count_documents({})
 
